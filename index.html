@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Timestamp</title>
+</head>
+<body>
+  <h1>YouTube Timestamp Tracker</h1>
+  
+  <input type="text" id="youtube-link" placeholder="Paste YouTube URL here" />
+  <button id="embed-video">Embed Video</button>
+  
+  <div id="video-container">
+    <div id="player"></div>
+  </div>
+  
+  <button id="get-real-time-summary">Summarize until now</button>
+  <span id="timestamp-display">0 seconds</span>
+
+  <script>
+    // Load the YouTube IFrame Player API
+    let tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+
+    let player;
+
+    // Initialize the YouTube player
+    function onYouTubeIframeAPIReady() {
+      document.getElementById("embed-video").addEventListener("click", function () {
+        const link = document.getElementById("youtube-link").value;
+        const videoId = link.split("v=")[1]?.split("&")[0]; // Extract video ID
+        if (videoId) {
+          if (player) {
+            player.loadVideoById(videoId); // Load video in the existing player
+          } else {
+            player = new YT.Player("player", {
+              height: "360",
+              width: "640",
+              videoId: videoId,
+            });
+          }
+        } else {
+          alert("Please enter a valid YouTube URL.");
+        }
+      });
+    }
+
+    // Get current timestamp and display it
+    document.getElementById("get-real-time-summary").addEventListener("click", function () {
+      if (player) {
+        const currentTime = player.getCurrentTime(); // Get current time in seconds
+        document.getElementById("timestamp-display").textContent = `${currentTime.toFixed(1)} seconds`;
+      } else {
+        alert("Please load a video first!");
+      }
+    });
+  </script>
+</body>
+</html>

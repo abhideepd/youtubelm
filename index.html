@@ -60,37 +60,37 @@
       }
     });
 
-    async function fetchTranscript() {
-                const videoUrl = document.getElementById('videoUrl').value;
-                const transcriptOutput = document.getElementById('transcriptOutput');
+    // async function fetchTranscript() {
+    //             const videoUrl = document.getElementById('videoUrl').value;
+    //             const transcriptOutput = document.getElementById('transcriptOutput');
 
-                if (!videoUrl) {
-                    transcriptOutput.innerText = 'Please enter a YouTube URL.';
-                    return;
-                }
+    //             if (!videoUrl) {
+    //                 transcriptOutput.innerText = 'Please enter a YouTube URL.';
+    //                 return;
+    //             }
 
-                try {
-                  const response = await fetch('/api/get_transcript', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                         },
-                        body: JSON.stringify({ url: videoUrl })
-                    });
+    //             try {
+    //               const response = await fetch('/api/get_transcript', {
+    //                     method: 'POST',
+    //                     headers: {
+    //                         'Content-Type': 'application/json'
+    //                      },
+    //                     body: JSON.stringify({ url: videoUrl })
+    //                 });
 
-                  if (!response.ok) {
-                        const errorMessage = await response.text()
-                        transcriptOutput.innerText = `Error fetching transcript: ${errorMessage}.`;
-                        return;
-                  }
-                  const data = await response.json();
-                  transcriptOutput.innerText = data.transcript;
+    //               if (!response.ok) {
+    //                     const errorMessage = await response.text()
+    //                     transcriptOutput.innerText = `Error fetching transcript: ${errorMessage}.`;
+    //                     return;
+    //               }
+    //               const data = await response.json();
+    //               transcriptOutput.innerText = data.transcript;
 
-                } catch(error) {
-                  console.error("Error sending request:", error);
-                  transcriptOutput.innerText = 'Error fetching transcript.';
-                }
-            }
+    //             } catch(error) {
+    //               console.error("Error sending request:", error);
+    //               transcriptOutput.innerText = 'Error fetching transcript.';
+    //             }
+    //         }
   </script>
 </body>
 </html>

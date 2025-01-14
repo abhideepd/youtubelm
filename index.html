@@ -3,94 +3,96 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YouTube Timestamp</title>
+  <title>YouTube Comments</title>
 </head>
 <body>
-  <h1>YouTube Timestamp Tracker</h1>
-  
-  <input type="text" id="youtube-link" placeholder="Paste YouTube URL here" ></input>
+  <h1>YouTube Comments Tracker</h1>
+
+  <input type="text" id="youtube-link" placeholder="Paste YouTube URL here" />
   <button id="embed-video">Embed Video</button>
   
   <div id="video-container">
     <div id="player"></div>
   </div>
-  
-  <button id="get-real-time-summary">Summarize until now</button>
+
+  <button id="get-timestamp">Get Timestamp</button>
   <span id="timestamp-display">0 seconds</span>
 
-<!--   <button onclick="fetchTranscript()">Fetch Transcript</button>
-  <pre id="transcriptOutput" style="margin: 10px;"></pre> -->
+  <h2>Comments:</h2>
+  <div id="comments-container"></div>
 
   <script>
+    // YouTube API Key (replace with your actual API key)
+    const API_KEY = 'YOUR_YOUTUBE_API_KEY';
+
+    let player;
+
     // Load the YouTube IFrame Player API
-    // let tag = document.createElement("script");
-    // tag.src = "https://www.youtube.com/iframe_api";
-    // document.head.appendChild(tag);
+    let tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
 
-    // let player;
+    // Initialize the YouTube player
+    function onYouTubeIframeAPIReady() {
+      document.getElementById("embed-video").addEventListener("click", function () {
+        const link = document.getElementById("youtube-link").value;
+        const videoId = link.split("v=")[1]?.split("&")[0]; // Extract video ID
+        if (videoId) {
+          if (player) {
+            player.loadVideoById(videoId); // Load video in the existing player
+          } else {
+            player = new YT.Player("player", {
+              height: "360",
+              width: "640",
+              videoId: videoId,
+            });
+            fetchComments(videoId); // Fetch comments after video is loaded
+          }
+        } else {
+          alert("Please enter a valid YouTube URL.");
+        }
+      });
+    }
 
-    // // Initialize the YouTube player
-    // function onYouTubeIframeAPIReady() {
-    //   document.getElementById("embed-video").addEventListener("click", function () {
-    //     const link = document.getElementById("youtube-link").value;
-    //     const videoId = link.split("v=")[1]?.split("&")[0]; // Extract video ID
-    //     if (videoId) {
-    //       if (player) {
-    //         player.loadVideoById(videoId); // Load video in the existing player
-    //       } else {
-    //         player = new YT.Player("player", {
-    //           height: "360",
-    //           width: "640",
-    //           videoId: videoId,
-    //         });
-    //       }
-    //     } else {
-    //       alert("Please enter a valid YouTube URL.");
-    //     }
-    //   });
-    // }
+    // Function to fetch YouTube comments
+    function fetchComments(videoId) {
+      const apiUrl = `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet&videoId=${videoId}&key=${API_KEY}`;
+      
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          const commentsContainer = document.getElementById("comments-container");
+          commentsContainer.innerHTML = ''; // Clear any previous comments
+          
+          if (data.items && data.items.length > 0) {
+            data.items.forEach(item => {
+              const commentText = item.snippet.topLevelComment.snippet.textDisplay;
+              const commenterName = item.snippet.topLevelComment.snippet.authorDisplayName;
+              
+              // Display the comment with the author's name
+              const commentElement = document.createElement("div");
+              commentElement.classList.add("comment");
+              commentElement.innerHTML = `<strong>${commenterName}</strong>: ${commentText}`;
+              commentsContainer.appendChild(commentElement);
+            });
+          } else {
+            commentsContainer.innerHTML = 'No comments available.';
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching comments:', error);
+        });
+    }
 
-    // // Get current timestamp and display it
-    // document.getElementById("get-real-time-summary").addEventListener("click", function () {
-    //   if (player) {
-    //     const currentTime = player.getCurrentTime(); // Get current time in seconds
-    //     document.getElementById("timestamp-display").textContent = `${currentTime.toFixed(1)} seconds`;
-    //   } else {
-    //     alert("Please load a video first!");
-    //   }
-    // });
-
-    // async function fetchTranscript() {
-    //             const videoUrl = document.getElementById('videoUrl').value;
-    //             const transcriptOutput = document.getElementById('transcriptOutput');
-
-    //             if (!videoUrl) {
-    //                 transcriptOutput.innerText = 'Please enter a YouTube URL.';
-    //                 return;
-    //             }
-
-    //             try {
-    //               const response = await fetch('/api/get_transcript', {
-    //                     method: 'POST',
-    //                     headers: {
-    //                         'Content-Type': 'application/json'
-    //                      },
-    //                     body: JSON.stringify({ url: videoUrl })
-    //                 });
-
-    //               if (!response.ok) {
-    //                     const errorMessage = await response.text()
-    //                     transcriptOutput.innerText = `Error fetching transcript: ${errorMessage}.`;
-    //                     return;
-    //               }
-    //               const data = await response.json();
-    //               transcriptOutput.innerText = data.transcript;
-
-    //             } catch(error) {
-    //               console.error("Error sending request:", error);
-    //               transcriptOutput.innerText = 'Error fetching transcript.';
-    //             }
-    //         }
+    // Get current timestamp and display it
+    document.getElementById("get-timestamp").addEventListener("click", function () {
+      if (player) {
+        const currentTime = player.getCurrentTime(); // Get current time in seconds
+        document.getElementById("timestamp-display").textContent = `${currentTime.toFixed(1)} seconds`;
+      } else {
+        alert("Please load a video first!");
+      }
+    });
   </script>
 </body>
 </html>

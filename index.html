@@ -20,6 +20,7 @@
 
   <button onclick="fetchTranscript()">Fetch Transcript</button>
   <pre id="transcriptOutput" style="margin: 10px;"></pre>
+<!--   <div id=""></div> -->
 
   <script>
     // Load the YouTube IFrame Player API
@@ -61,7 +62,7 @@
     });
 
     async function fetchTranscript() {
-                const videoUrl = document.getElementById('videoUrl').value;
+                const videoUrl = document.getElementById('youtube-link').value;
                 const transcriptOutput = document.getElementById('transcriptOutput');
 
                 if (!videoUrl) {

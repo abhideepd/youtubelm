@@ -3,34 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YouTube Comments</title>
+  <title>YouTube Timestamp</title>
 </head>
 <body>
-  <h1>YouTube Comments Tracker</h1>
-
+  <h1>YouTube Timestamp Tracker</h1>
+  
   <input type="text" id="youtube-link" placeholder="Paste YouTube URL here" />
   <button id="embed-video">Embed Video</button>
   
   <div id="video-container">
     <div id="player"></div>
   </div>
-
+  
   <button id="get-timestamp">Get Timestamp</button>
   <span id="timestamp-display">0 seconds</span>
 
-  <h2>Comments:</h2>
-  <div id="comments-container"></div>
-
   <script>
-    // YouTube API Key (replace with your actual API key)
-    const API_KEY = 'YOUR_YOUTUBE_API_KEY';
-
-    let player;
-
     // Load the YouTube IFrame Player API
     let tag = document.createElement("script");
     tag.src = "https://www.youtube.com/iframe_api";
     document.head.appendChild(tag);
+
+    let player;
 
     // Initialize the YouTube player
     function onYouTubeIframeAPIReady() {
@@ -46,42 +40,11 @@
               width: "640",
               videoId: videoId,
             });
-            fetchComments(videoId); // Fetch comments after video is loaded
           }
         } else {
           alert("Please enter a valid YouTube URL.");
         }
       });
-    }
-
-    // Function to fetch YouTube comments
-    function fetchComments(videoId) {
-      const apiUrl = `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet&videoId=${videoId}&key=${API_KEY}`;
-      
-      fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-          const commentsContainer = document.getElementById("comments-container");
-          commentsContainer.innerHTML = ''; // Clear any previous comments
-          
-          if (data.items && data.items.length > 0) {
-            data.items.forEach(item => {
-              const commentText = item.snippet.topLevelComment.snippet.textDisplay;
-              const commenterName = item.snippet.topLevelComment.snippet.authorDisplayName;
-              
-              // Display the comment with the author's name
-              const commentElement = document.createElement("div");
-              commentElement.classList.add("comment");
-              commentElement.innerHTML = `<strong>${commenterName}</strong>: ${commentText}`;
-              commentsContainer.appendChild(commentElement);
-            });
-          } else {
-            commentsContainer.innerHTML = 'No comments available.';
-          }
-        })
-        .catch(error => {
-          console.error('Error fetching comments:', error);
-        });
     }
 
     // Get current timestamp and display it

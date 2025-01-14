@@ -18,6 +18,9 @@
   <button id="get-real-time-summary">Summarize until now</button>
   <span id="timestamp-display">0 seconds</span>
 
+  <button onclick="fetchTranscript()">Fetch Transcript</button>
+  <pre id="transcriptOutput" style="margin: 10px;"></pre>
+
   <script>
     // Load the YouTube IFrame Player API
     let tag = document.createElement("script");
@@ -56,6 +59,38 @@
         alert("Please load a video first!");
       }
     });
+
+    async function fetchTranscript() {
+                const videoUrl = document.getElementById('videoUrl').value;
+                const transcriptOutput = document.getElementById('transcriptOutput');
+
+                if (!videoUrl) {
+                    transcriptOutput.innerText = 'Please enter a YouTube URL.';
+                    return;
+                }
+
+                try {
+                  const response = await fetch('/api/get_transcript', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                         },
+                        body: JSON.stringify({ url: videoUrl })
+                    });
+
+                  if (!response.ok) {
+                        const errorMessage = await response.text()
+                        transcriptOutput.innerText = `Error fetching transcript: ${errorMessage}.`;
+                        return;
+                  }
+                  const data = await response.json();
+                  transcriptOutput.innerText = data.transcript;
+
+                } catch(error) {
+                  console.error("Error sending request:", error);
+                  transcriptOutput.innerText = 'Error fetching transcript.';
+                }
+            }
   </script>
 </body>
 </html>

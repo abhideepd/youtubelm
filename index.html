@@ -8,7 +8,7 @@
 <body>
   <h1>YouTube Timestamp Tracker</h1>
   
-  <input type="text" id="youtube-link" placeholder="Paste YouTube URL here" >https://www.youtube.com/watch?v=4oyqd7CB09c&ab_channel=GoogleforDevelopers</input>
+  <input type="text" id="youtube-link" placeholder="Paste YouTube URL here" ></input>
   <button id="embed-video">Embed Video</button>
   
   <div id="video-container">
@@ -23,42 +23,42 @@
 
   <script>
     // Load the YouTube IFrame Player API
-    let tag = document.createElement("script");
-    tag.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(tag);
+    // let tag = document.createElement("script");
+    // tag.src = "https://www.youtube.com/iframe_api";
+    // document.head.appendChild(tag);
 
-    let player;
+    // let player;
 
-    // Initialize the YouTube player
-    function onYouTubeIframeAPIReady() {
-      document.getElementById("embed-video").addEventListener("click", function () {
-        const link = document.getElementById("youtube-link").value;
-        const videoId = link.split("v=")[1]?.split("&")[0]; // Extract video ID
-        if (videoId) {
-          if (player) {
-            player.loadVideoById(videoId); // Load video in the existing player
-          } else {
-            player = new YT.Player("player", {
-              height: "360",
-              width: "640",
-              videoId: videoId,
-            });
-          }
-        } else {
-          alert("Please enter a valid YouTube URL.");
-        }
-      });
-    }
+    // // Initialize the YouTube player
+    // function onYouTubeIframeAPIReady() {
+    //   document.getElementById("embed-video").addEventListener("click", function () {
+    //     const link = document.getElementById("youtube-link").value;
+    //     const videoId = link.split("v=")[1]?.split("&")[0]; // Extract video ID
+    //     if (videoId) {
+    //       if (player) {
+    //         player.loadVideoById(videoId); // Load video in the existing player
+    //       } else {
+    //         player = new YT.Player("player", {
+    //           height: "360",
+    //           width: "640",
+    //           videoId: videoId,
+    //         });
+    //       }
+    //     } else {
+    //       alert("Please enter a valid YouTube URL.");
+    //     }
+    //   });
+    // }
 
-    // Get current timestamp and display it
-    document.getElementById("get-real-time-summary").addEventListener("click", function () {
-      if (player) {
-        const currentTime = player.getCurrentTime(); // Get current time in seconds
-        document.getElementById("timestamp-display").textContent = `${currentTime.toFixed(1)} seconds`;
-      } else {
-        alert("Please load a video first!");
-      }
-    });
+    // // Get current timestamp and display it
+    // document.getElementById("get-real-time-summary").addEventListener("click", function () {
+    //   if (player) {
+    //     const currentTime = player.getCurrentTime(); // Get current time in seconds
+    //     document.getElementById("timestamp-display").textContent = `${currentTime.toFixed(1)} seconds`;
+    //   } else {
+    //     alert("Please load a video first!");
+    //   }
+    // });
 
     // async function fetchTranscript() {
     //             const videoUrl = document.getElementById('videoUrl').value;

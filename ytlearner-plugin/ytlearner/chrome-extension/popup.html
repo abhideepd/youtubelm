@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>YT Learner</title>
+  <link rel="stylesheet" href="css/popup.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">▶</div>
+      <span class="logo-text">YT<span class="accent">Learner</span></span>
+    </div>
+    <div class="header-right">
+      <div class="status-dot" id="statusDot"></div>
+      <button class="icon-btn" id="settingsBtn" title="Settings">⚙</button>
+    </div>
+  </header>
+
+  <!-- Video Info Banner -->
+  <div class="video-banner" id="videoBanner">
+    <div class="video-thumb-wrap">
+      <img id="videoThumb" src="" alt="" class="video-thumb" />
+      <div class="play-overlay">▶</div>
+    </div>
+    <div class="video-meta">
+      <div class="video-title" id="videoTitle">No video detected</div>
+      <div class="video-channel" id="videoChannel">Open a YouTube video</div>
+      <div class="video-tags">
+        <span class="tag" id="videoDuration">–</span>
+        <span class="tag save-tag" id="saveForTriviaBtn">📌 Track</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="summary">Summary</button>
+    <button class="tab-btn" data-tab="quiz">Quiz</button>
+    <button class="tab-btn" data-tab="questions">Q&A</button>
+    <button class="tab-btn" data-tab="trivia">Trivia</button>
+  </nav>
+
+  <!-- ========== SUMMARY TAB ========== -->
+  <section class="tab-content active" id="tab-summary">
+    <div class="action-row">
+      <button class="primary-btn" id="summarizeBtn">
+        <span class="btn-icon">✦</span> Summarize Video
+      </button>
+      <div class="detail-toggle">
+        <label>Detail</label>
+        <select id="summaryLength">
+          <option value="brief">Brief</option>
+          <option value="standard" selected>Standard</option>
+          <option value="detailed">Detailed</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="skeleton-wrap" id="summarySkeleton" style="display:none">
+      <div class="skeleton-line" style="width:90%"></div>
+      <div class="skeleton-line" style="width:75%"></div>
+      <div class="skeleton-line" style="width:85%"></div>
+      <div class="skeleton-line" style="width:60%"></div>
+    </div>
+
+    <div class="result-box" id="summaryResult" style="display:none">
+      <div class="result-header">
+        <span class="result-badge">AI Summary</span>
+        <button class="copy-btn" id="copySummaryBtn" title="Copy">⧉</button>
+      </div>
+      <div class="result-text" id="summaryText"></div>
+      <div class="key-points" id="keyPoints"></div>
+    </div>
+
+    <div class="empty-state" id="summaryEmpty">
+      <div class="empty-icon">✦</div>
+      <p>Summarize any YouTube video instantly using AI</p>
+    </div>
+  </section>
+
+  <!-- ========== QUIZ TAB ========== -->
+  <section class="tab-content" id="tab-quiz">
+    <div class="action-row">
+      <button class="primary-btn" id="generateQuizBtn">
+        <span class="btn-icon">⊞</span> Generate Quiz
+      </button>
+      <div class="detail-toggle">
+        <label>Questions</label>
+        <select id="quizCount">
+          <option value="3">3</option>
+          <option value="5" selected>5</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="skeleton-wrap" id="quizSkeleton" style="display:none">
+      <div class="skeleton-line" style="width:95%"></div>
+      <div class="skeleton-line" style="width:50%"></div>
+      <div class="skeleton-line" style="width:55%"></div>
+      <div class="skeleton-line" style="width:50%"></div>
+      <div class="skeleton-line" style="width:52%"></div>
+    </div>
+
+    <div id="quizContainer" style="display:none">
+      <div class="quiz-progress">
+        <span id="quizProgress">Question 1 / 5</span>
+        <span id="quizScore" class="score-badge">Score: 0</span>
+      </div>
+      <div class="mcq-card" id="mcqCard">
+        <div class="mcq-question" id="mcqQuestion"></div>
+        <div class="mcq-options" id="mcqOptions"></div>
+        <div class="mcq-feedback" id="mcqFeedback" style="display:none"></div>
+        <div class="mcq-nav">
+          <button class="secondary-btn" id="prevQuestionBtn" disabled>← Prev</button>
+          <button class="primary-btn" id="nextQuestionBtn">Next →</button>
+        </div>
+      </div>
+      <div class="quiz-complete" id="quizComplete" style="display:none">
+        <div class="complete-icon">🏆</div>
+        <div class="complete-score" id="finalScore"></div>
+        <p class="complete-msg" id="completeMsg"></p>
+        <button class="primary-btn" id="retryQuizBtn">Retry Quiz</button>
+      </div>
+    </div>
+
+    <div class="empty-state" id="quizEmpty">
+      <div class="empty-icon">⊞</div>
+      <p>AI-generated MCQs to test your understanding</p>
+    </div>
+  </section>
+
+  <!-- ========== Q&A TAB ========== -->
+  <section class="tab-content" id="tab-questions">
+    <div class="qa-input-wrap">
+      <textarea id="questionInput" class="qa-textarea" placeholder="Ask a question about this video..."></textarea>
+      <div class="qa-actions">
+        <span class="char-count" id="charCount">0/300</span>
+        <button class="primary-btn" id="submitQuestionBtn">Post Question</button>
+      </div>
+    </div>
+
+    <div class="section-label">Community Questions</div>
+    <div id="questionsList" class="questions-list">
+      <div class="loading-text" id="questionsLoading" style="display:none">Loading questions…</div>
+      <div class="empty-state" id="questionsEmpty">
+        <div class="empty-icon">💬</div>
+        <p>Be the first to ask about this video</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== TRIVIA TAB ========== -->
+  <section class="tab-content" id="tab-trivia">
+    <div class="trivia-header-card">
+      <div class="trivia-icon">🔔</div>
+      <div>
+        <div class="trivia-title">Spaced Repetition Trivia</div>
+        <div class="trivia-sub">Get notified with bite-sized recalls from videos you've tracked</div>
+      </div>
+    </div>
+
+    <div class="trivia-settings">
+      <div class="setting-row">
+        <span class="setting-label">Notification frequency</span>
+        <select id="triviaFrequency" class="setting-select">
+          <option value="60">Every hour</option>
+          <option value="240">Every 4 hours</option>
+          <option value="1440" selected>Daily</option>
+          <option value="10080">Weekly</option>
+        </select>
+      </div>
+      <button class="primary-btn full-width" id="saveTriviaPrefBtn">Save Preferences</button>
+    </div>
+
+    <div class="section-label">Tracked Videos</div>
+    <div id="trackedVideosList" class="tracked-list">
+      <div class="empty-state" id="trackedEmpty">
+        <div class="empty-icon">📌</div>
+        <p>Track videos from the banner above to get trivia later</p>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-top:12px">Latest Trivia</div>
+    <div id="triviaFeed" class="trivia-feed">
+      <div class="skeleton-wrap" id="triviaSkeleton" style="display:none">
+        <div class="skeleton-line" style="width:80%"></div>
+        <div class="skeleton-line" style="width:65%"></div>
+      </div>
+      <div class="empty-state" id="triviaFeedEmpty">
+        <div class="empty-icon">✨</div>
+        <p>Trivia cards will appear here after tracking videos</p>
+      </div>
+    </div>
+
+    <button class="secondary-btn full-width" id="fetchTriviaBtn" style="margin-top:12px">
+      Fetch Trivia Now
+    </button>
+  </section>
+
+  <!-- Settings Panel (overlay) -->
+  <div class="settings-panel" id="settingsPanel" style="display:none">
+    <div class="settings-header">
+      <span>Settings</span>
+      <button class="icon-btn" id="closeSettingsBtn">✕</button>
+    </div>
+    <div class="settings-body">
+      <div class="setting-group">
+        <label class="setting-group-label">Backend API URL</label>
+        <input type="text" id="apiUrlInput" class="text-input" placeholder="http://localhost:8080" />
+      </div>
+      <div class="setting-group">
+        <label class="setting-group-label">Username</label>
+        <input type="text" id="usernameInput" class="text-input" placeholder="your-username" />
+      </div>
+      <div class="setting-group">
+        <label class="setting-group-label">API Key (Claude/OpenAI)</label>
+        <input type="password" id="apiKeyInput" class="text-input" placeholder="sk-..." />
+        <p class="hint">Stored locally. Used by the backend if self-hosted.</p>
+      </div>
+      <button class="primary-btn full-width" id="saveSettingsBtn">Save Settings</button>
+      <div class="toast" id="settingsToast" style="display:none">✓ Saved!</div>
+    </div>
+  </div>
+
+  <!-- Global toast -->
+  <div class="global-toast" id="globalToast" style="display:none"></div>
+
+  <script src="js/popup.js"></script>
+</body>
+</html>

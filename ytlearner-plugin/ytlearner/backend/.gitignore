@@ -1,0 +1,12 @@
+# Gradle
+/build/
+/.gradle/
+/.idea/
+/*.iml
+
+# Maven leftovers
+/target/
+
+# OS files
+.DS_Store
+Thumbs.db

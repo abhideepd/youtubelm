@@ -2,8 +2,6 @@ package com.ytlearner.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ytlearner.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
@@ -18,26 +16,14 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class AIService {
 
-    @Value("${ytlearner.ai.provider:anthropic}")
-    private String provider;
+    @Value("${ytlearner.ai.gemini.api-key}")
+    private String geminiApiKey;
 
-    @Value("${ytlearner.ai.anthropic.api-key:}")
-    private String anthropicApiKey;
+    @Value("${ytlearner.ai.gemini.model:gemini-1.5-flash}")
+    private String geminiModel;
 
-    @Value("${ytlearner.ai.anthropic.model:claude-sonnet-4-20250514}")
-    private String anthropicModel;
-
-    @Value("${ytlearner.ai.anthropic.base-url:https://api.anthropic.com/v1}")
-    private String anthropicBaseUrl;
-
-    @Value("${ytlearner.ai.openai.api-key:}")
-    private String openaiApiKey;
-
-    @Value("${ytlearner.ai.openai.model:gpt-4o-mini}")
-    private String openaiModel;
-
-    @Value("${ytlearner.ai.openai.base-url:https://api.openai.com/v1}")
-    private String openaiBaseUrl;
+    @Value("${ytlearner.ai.gemini.base-url:https://generativelanguage.googleapis.com/v1beta/models}")
+    private String geminiBaseUrl;
 
     private final OkHttpClient httpClient = new OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
@@ -201,70 +187,50 @@ public class AIService {
         }
     }
 
-    // ─── Core AI call (Anthropic or OpenAI) ──────────────────────────────────
+    // ─── Core AI call (Gemini) ────────────────────────────────────────────────
     private String callAI(String prompt) {
-        return "anthropic".equalsIgnoreCase(provider)
-                ? callAnthropic(prompt)
-                : callOpenAI(prompt);
+        return callGemini(prompt);
     }
 
-    private String callAnthropic(String prompt) {
+    private String callGemini(String prompt) {
         try {
-            ObjectNode body = mapper.createObjectNode();
-            body.put("model", anthropicModel);
-            body.put("max_tokens", 2048);
-            ArrayNode messages = body.putArray("messages");
-            ObjectNode msg = messages.addObject();
-            msg.put("role", "user");
-            msg.put("content", prompt);
+            String url = geminiBaseUrl + "/" + geminiModel + ":generateContent?key=" + geminiApiKey;
+
+            String requestBody = String.format("""
+                    {
+                      "contents": [
+                        {
+                          "parts": [
+                            {
+                              "text": %s
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                    """, mapper.writeValueAsString(prompt));
 
             Request req = new Request.Builder()
-                    .url(anthropicBaseUrl + "/messages")
+                    .url(url)
                     .post(RequestBody.create(
-                            mapper.writeValueAsBytes(body),
+                            requestBody.getBytes(),
                             MediaType.get("application/json")))
-                    .addHeader("x-api-key", anthropicApiKey)
-                    .addHeader("anthropic-version", "2023-06-01")
                     .addHeader("Content-Type", "application/json")
                     .build();
 
             try (Response resp = httpClient.newCall(req).execute()) {
                 String json = resp.body().string();
                 JsonNode root = mapper.readTree(json);
-                return root.path("content").get(0).path("text").asText();
+                return root.path("candidates")
+                        .get(0)
+                        .path("content")
+                        .path("parts")
+                        .get(0)
+                        .path("text")
+                        .asText();
             }
         } catch (Exception e) {
-            log.error("Anthropic API call failed", e);
-            return "{}";
-        }
-    }
-
-    private String callOpenAI(String prompt) {
-        try {
-            ObjectNode body = mapper.createObjectNode();
-            body.put("model", openaiModel);
-            body.put("max_tokens", 2048);
-            ArrayNode messages = body.putArray("messages");
-            ObjectNode msg = messages.addObject();
-            msg.put("role", "user");
-            msg.put("content", prompt);
-
-            Request req = new Request.Builder()
-                    .url(openaiBaseUrl + "/chat/completions")
-                    .post(RequestBody.create(
-                            mapper.writeValueAsBytes(body),
-                            MediaType.get("application/json")))
-                    .addHeader("Authorization", "Bearer " + openaiApiKey)
-                    .addHeader("Content-Type", "application/json")
-                    .build();
-
-            try (Response resp = httpClient.newCall(req).execute()) {
-                String json = resp.body().string();
-                JsonNode root = mapper.readTree(json);
-                return root.path("choices").get(0).path("message").path("content").asText();
-            }
-        } catch (Exception e) {
-            log.error("OpenAI API call failed", e);
+            log.error("Gemini API call failed", e);
             return "{}";
         }
     }

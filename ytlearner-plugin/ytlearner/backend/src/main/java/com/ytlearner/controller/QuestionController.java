@@ -2,9 +2,11 @@ package com.ytlearner.controller;
 
 import com.ytlearner.dto.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.attribute.standard.Media;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/questions")
+@RequestMapping(value="/api/questions", produces=MediaType.APPLICATION_JSON_VALUE)
 public class QuestionController {
 
     // In-memory store: videoId -> list of questions

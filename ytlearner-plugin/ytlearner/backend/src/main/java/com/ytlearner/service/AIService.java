@@ -194,8 +194,10 @@ public class AIService {
 
     private String callGemini(String prompt) {
         try {
-            String url = geminiBaseUrl + "/" + geminiModel + ":generateContent?key=" + geminiApiKey;
-
+//            String url = geminiBaseUrl + "/" + geminiModel + ":generateContent?key=" + geminiApiKey;
+            String url = geminiBaseUrl + "/" + geminiModel + "?key=" + geminiApiKey;
+            log.info("PROMPT: "+prompt+"\n");
+            log.info("URL: "+url+"\n");
             String requestBody = String.format("""
                     {
                       "contents": [
@@ -217,10 +219,11 @@ public class AIService {
                             MediaType.get("application/json")))
                     .addHeader("Content-Type", "application/json")
                     .build();
-
+            log.info(requestBody);
             try (Response resp = httpClient.newCall(req).execute()) {
                 String json = resp.body().string();
                 JsonNode root = mapper.readTree(json);
+                log.info("RESPONSE: "+json);
                 return root.path("candidates")
                         .get(0)
                         .path("content")

@@ -4,6 +4,7 @@ import com.ytlearner.dto.*;
 import com.ytlearner.service.AIService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,7 @@ public class QuizAndTriviaController {
 
     // ─── Quiz Results ──────────────────────────────────────────────────────────
 
-    @PostMapping("/api/quiz/results")
+    @PostMapping(value="/api/quiz/results", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> saveQuizResult(@RequestBody QuizResultRequest request) {
         quizResults.computeIfAbsent(request.getUsername(), k -> new ArrayList<>()).add(request);
         log.debug("Quiz result saved: user={}, video={}, {}/{}", 
@@ -40,14 +41,14 @@ public class QuizAndTriviaController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/api/quiz/results/{username}")
+    @GetMapping(value="/api/quiz/results/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<QuizResultRequest>> getQuizResults(@PathVariable String username) {
         return ResponseEntity.ok(quizResults.getOrDefault(username, List.of()));
     }
 
     // ─── Trivia Tracking ───────────────────────────────────────────────────────
 
-    @PostMapping("/api/trivia/track")
+    @PostMapping(value="/api/trivia/track", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> trackVideo(@RequestBody TrackVideoRequest request) {
         trackedVideos.computeIfAbsent(request.getUsername(), k -> new HashMap<>())
                      .put(request.getVideoId(), request.getTitle() != null ? request.getTitle() : request.getVideoId());
@@ -55,7 +56,7 @@ public class QuizAndTriviaController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/api/trivia/preferences")
+    @PostMapping(value="/api/trivia/preferences", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> savePreferences(@RequestBody TriviaPreferencesRequest request) {
         triviaPrefs.put(request.getUsername(), request.getFrequencyMinutes());
         log.debug("Trivia prefs saved: user={}, freq={}min", request.getUsername(), request.getFrequencyMinutes());
@@ -66,7 +67,7 @@ public class QuizAndTriviaController {
      * POST /api/trivia/generate
      * Generates trivia cards for a set of tracked videos.
      */
-    @PostMapping("/api/trivia/generate")
+    @PostMapping(value="/api/trivia/generate", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TriviaGenerateResponse> generateTrivia(@RequestBody TriviaGenerateRequest request) {
         List<String> videoIds = request.getVideoIds();
         if (videoIds == null || videoIds.isEmpty()) {

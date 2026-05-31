@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/youtubelm.iml" filepath="$PROJECT_DIR$/.idea/youtubelm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ytlearner-backend.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ytlearner-backend.main.iml" />
     </modules>
   </component>
 </project>
